@@ -349,11 +349,33 @@
           boot.supportedFilesystems.zfs = lib.mkForce false;
           nixpkgs.config.allowBroken = false;
 
+          # SSH enabled on boot with authorized keys
+          services.openssh = {
+            enable = true;
+            settings = {
+              PermitRootLogin = "prohibit-password";
+              PasswordAuthentication = false;
+            };
+          };
+
+          # Allow SSH access for both nixos and root users
+          users.users.nixos.openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwsHmQtv++obVtbu8Nc9COPOLEG5N12jYk75dTCaRsT hh@nextral.sharing.io"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIItrB/8JpOZIyhp00TSKPxLOs3ZsqGBciIkCJi+SyjzJ hh@m1.medusa.local"
+            "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUhS7BghZwYoLKSsQx7HBxeV9JaA8jIA/kQCrKR58wWbFW7o2qHSC5lD9eJuDH439ifzsG05OxOgsm3Q+Jrb+VTOY1MdGAIW7SV2/xqDjLWmS259qH5kSYaP8TBq2EZZ9mFmIdZPDA7Q5ezjNcyH/LqW0FxU7XqIzFsrZlhDTZ57KZgivRZZsyauwOOP8+nXNj4YGSeQfzpiZXIaTZpSqWOrgud2kIehkeraJTlkXIbLge2zqM0dGLHVEyVW3W8qFPbmZBTdVhH2Tkgz9NNeukgXPzBdhSzSCdA/pLZ28MYUGScaDkc6BhpXHJzBo5zTpyhDyeHoHPUUYyTmFPUc2d hh@p70"
+          ];
+          users.users.root.openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwsHmQtv++obVtbu8Nc9COPOLEG5N12jYk75dTCaRsT hh@nextral.sharing.io"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIItrB/8JpOZIyhp00TSKPxLOs3ZsqGBciIkCJi+SyjzJ hh@m1.medusa.local"
+            "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUhS7BghZwYoLKSsQx7HBxeV9JaA8jIA/kQCrKR58wWbFW7o2qHSC5lD9eJuDH439ifzsG05OxOgsm3Q+Jrb+VTOY1MdGAIW7SV2/xqDjLWmS259qH5kSYaP8TBq2EZZ9mFmIdZPDA7Q5ezjNcyH/LqW0FxU7XqIzFsrZlhDTZ57KZgivRZZsyauwOOP8+nXNj4YGSeQfzpiZXIaTZpSqWOrgud2kIehkeraJTlkXIbLge2zqM0dGLHVEyVW3W8qFPbmZBTdVhH2Tkgz9NNeukgXPzBdhSzSCdA/pLZ28MYUGScaDkc6BhpXHJzBo5zTpyhDyeHoHPUUYyTmFPUc2d hh@p70"
+          ];
+
           # Helpful message on login
           services.getty.helpLine = lib.mkForce ''
 
             Welcome to the NixOS Installer for Framework 16!
 
+            SSH is enabled! Connect with: ssh nixos@<this-ip> or ssh root@<this-ip>
             WiFi should auto-connect to: wifi5.0G
             Check connection: ip a
 
