@@ -315,6 +315,70 @@
           networking.networkmanager.enable = true;
           networking.wireless.enable = false;
 
+          # Pre-configured WiFi networks (auto-connect on boot)
+          networking.networkmanager.ensureProfiles = {
+            environmentFiles = [];
+            profiles = {
+              "wifi5.0G" = {
+                connection = {
+                  id = "wifi5.0G";
+                  type = "wifi";
+                  autoconnect = true;
+                  autoconnect-priority = 100;
+                };
+                wifi = {
+                  mode = "infrastructure";
+                  ssid = "wifi5.0G";
+                };
+                wifi-security = {
+                  auth-alg = "open";
+                  key-mgmt = "wpa-psk";
+                  psk = "password";
+                };
+                ipv4.method = "auto";
+                ipv6.method = "auto";
+              };
+              "Harperhouse" = {
+                connection = {
+                  id = "Harperhouse";
+                  type = "wifi";
+                  autoconnect = true;
+                  autoconnect-priority = 90;
+                };
+                wifi = {
+                  mode = "infrastructure";
+                  ssid = "Harperhouse";
+                };
+                wifi-security = {
+                  auth-alg = "open";
+                  key-mgmt = "wpa-psk";
+                  psk = "Harper1064";
+                };
+                ipv4.method = "auto";
+                ipv6.method = "auto";
+              };
+              "Bitter Buffalo" = {
+                connection = {
+                  id = "Bitter Buffalo";
+                  type = "wifi";
+                  autoconnect = true;
+                  autoconnect-priority = 80;
+                };
+                wifi = {
+                  mode = "infrastructure";
+                  ssid = "Bitter Buffalo";
+                };
+                wifi-security = {
+                  auth-alg = "open";
+                  key-mgmt = "wpa-psk";
+                  psk = "pr@yf0rm0j0";
+                };
+                ipv4.method = "auto";
+                ipv6.method = "auto";
+              };
+            };
+          };
+
           # Latest kernel for Framework 16
           boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -323,8 +387,11 @@
 
             Welcome to the NixOS Installer for Framework 16!
 
+            WiFi should auto-connect to: wifi5.0G, Harperhouse, or Bitter Buffalo
+            Check connection: ip a
+
             Quick start:
-              1. Connect to WiFi:  wifi-connect "YourSSID" "YourPassword"
+              1. Verify network:   ping -c2 google.com
               2. Install NixOS:    sudo install-scope
 
             The install script will:
@@ -332,9 +399,12 @@
               - Install NixOS with the "scope" configuration
               - Copy the config repo to /home/hh/w/hh/hh
 
-            Manual commands:
+            Manual WiFi (if auto-connect fails):
+              - List networks:     nmcli device wifi list
+              - Connect:           wifi-connect "SSID" "password"
+
+            Other commands:
               - List drives:       lsblk
-              - List WiFi:         nmcli device wifi list
               - Check hardware:    lspci, lsusb
 
           '';

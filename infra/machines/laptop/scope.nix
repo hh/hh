@@ -22,6 +22,9 @@
     ./nixos-modules/depot-sync.nix
     ./nixos-modules/depot-deploy-machine.nix
     ./nixos-modules/depot-deploy-home.nix
+
+    # WiFi networks
+    ./nixos-modules/wifi.nix
   ];
 
   # ============================================================
