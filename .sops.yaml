@@ -1,0 +1,22 @@
+# SOPS configuration
+# Defines which keys can decrypt which files
+
+keys:
+  # Add your age public keys here after generating them
+  # You can convert your SSH key: ssh-to-age -i ~/.ssh/id_ed25519.pub
+  # - &hh age1...
+  # - &scope age1...  # Machine's SSH host key
+
+creation_rules:
+  # Secrets for scope machine
+  - path_regex: infra/machines/laptop/secrets/scope\.yaml$
+    key_groups:
+      - age: []
+        # - *hh
+        # - *scope
+
+  # Default: encrypt with all keys
+  - path_regex: \.yaml$
+    key_groups:
+      - age: []
+        # - *hh

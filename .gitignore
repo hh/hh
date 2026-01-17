@@ -1,0 +1,23 @@
+# Nix
+result
+result-*
+.direnv/
+
+# Secrets (never commit!)
+*.age
+secrets/*.yaml
+!secrets/.gitkeep
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+/tmp/
