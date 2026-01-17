@@ -1,15 +1,16 @@
 # Declarative disk partitioning for Framework 16 "scope"
-# LUKS encryption + Btrfs with subvolumes
+# 4TB NVMe, 96GB RAM, Btrfs (no encryption)
 #
 # Usage:
-#   echo "your-password" > /tmp/disk-password
 #   sudo nix run github:nix-community/disko -- --mode disko ./disko-scope.nix
+#
 {
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        # Framework 16 NVMe drive
+        # Framework 16 primary NVMe (4TB)
+        # Second drive (nvme1n1) left untouched for other OS
         device = "/dev/nvme0n1";
         content = {
           type = "gpt";
@@ -26,59 +27,75 @@
               };
             };
 
-            # LUKS encrypted root
-            luks = {
+            # Main filesystem (btrfs, no encryption)
+            root = {
               size = "100%";
               content = {
-                type = "luks";
-                name = "cryptroot";
-                # Set password before running disko:
-                # echo "password" > /tmp/disk-password
-                passwordFile = "/tmp/disk-password";
-                settings = {
-                  allowDiscards = true; # TRIM support for SSD performance
-                };
-                content = {
-                  type = "btrfs";
-                  extraArgs = ["-f"]; # Force overwrite
-                  subvolumes = {
-                    # Root subvolume
-                    "@" = {
-                      mountpoint = "/";
-                      mountOptions = ["compress=zstd" "noatime"];
-                    };
+                type = "btrfs";
+                extraArgs = ["-f"];
+                subvolumes = {
+                  # ==========================================
+                  # Core System
+                  # ==========================================
 
-                    # Home - separate for easy backup/restore
-                    "@home" = {
-                      mountpoint = "/home";
-                      mountOptions = ["compress=zstd" "noatime"];
-                    };
+                  "@" = {
+                    mountpoint = "/";
+                    mountOptions = ["compress=zstd" "noatime"];
+                  };
 
-                    # Nix store - separate to exclude from snapshots
-                    "@nix" = {
-                      mountpoint = "/nix";
-                      mountOptions = ["compress=zstd" "noatime"];
-                    };
+                  "@home" = {
+                    mountpoint = "/home";
+                    mountOptions = ["compress=zstd" "noatime"];
+                  };
 
-                    # Var - logs, state, etc.
-                    "@var" = {
-                      mountpoint = "/var";
-                      mountOptions = ["compress=zstd" "noatime"];
-                    };
+                  "@nix" = {
+                    mountpoint = "/nix";
+                    mountOptions = ["compress=zstd" "noatime"];
+                  };
 
-                    # Swap file for hibernate support
-                    # Size should match RAM (32G recommended for 32GB RAM)
-                    "@swap" = {
-                      mountpoint = "/swap";
-                      swap.swapfile = {
-                        size = "32G";
-                      };
-                    };
+                  # ==========================================
+                  # Variable Data
+                  # ==========================================
 
-                    # Snapshots subvolume (for btrfs snapshots)
-                    "@snapshots" = {
-                      mountpoint = "/.snapshots";
-                      mountOptions = ["compress=zstd" "noatime"];
+                  "@var-log" = {
+                    mountpoint = "/var/log";
+                    mountOptions = ["compress=zstd" "noatime"];
+                  };
+
+                  "@var-tmp" = {
+                    mountpoint = "/var/tmp";
+                    mountOptions = ["noatime"];
+                  };
+
+                  # ==========================================
+                  # Container & VM Storage
+                  # ==========================================
+
+                  "@containers" = {
+                    mountpoint = "/var/lib/containers";
+                    mountOptions = ["compress=zstd" "noatime"];
+                  };
+
+                  "@libvirt" = {
+                    mountpoint = "/var/lib/libvirt";
+                    mountOptions = ["compress=zstd:1" "noatime"];
+                  };
+
+                  # ==========================================
+                  # Snapshots & Swap
+                  # ==========================================
+
+                  "@snapshots" = {
+                    mountpoint = "/.snapshots";
+                    mountOptions = ["compress=zstd" "noatime"];
+                  };
+
+                  # Swap for hibernate (96GB RAM)
+                  "@swap" = {
+                    mountpoint = "/swap";
+                    mountOptions = ["noatime"];
+                    swap.swapfile = {
+                      size = "96G";
                     };
                   };
                 };

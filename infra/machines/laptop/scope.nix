@@ -66,43 +66,65 @@
 
   # ============================================================
   # Filesystem Configuration
-  # (Matches disko-scope.nix - these are for nixos-rebuild)
+  # (Matches disko-scope.nix - btrfs, no encryption)
   # ============================================================
 
+  # Core system
   fileSystems."/" = {
-    device = "/dev/mapper/cryptroot";
+    device = "/dev/disk/by-partlabel/root";
     fsType = "btrfs";
     options = ["subvol=@" "compress=zstd" "noatime"];
   };
 
   fileSystems."/home" = {
-    device = "/dev/mapper/cryptroot";
+    device = "/dev/disk/by-partlabel/root";
     fsType = "btrfs";
     options = ["subvol=@home" "compress=zstd" "noatime"];
   };
 
   fileSystems."/nix" = {
-    device = "/dev/mapper/cryptroot";
+    device = "/dev/disk/by-partlabel/root";
     fsType = "btrfs";
     options = ["subvol=@nix" "compress=zstd" "noatime"];
   };
 
-  fileSystems."/var" = {
-    device = "/dev/mapper/cryptroot";
+  # Variable data
+  fileSystems."/var/log" = {
+    device = "/dev/disk/by-partlabel/root";
     fsType = "btrfs";
-    options = ["subvol=@var" "compress=zstd" "noatime"];
+    options = ["subvol=@var-log" "compress=zstd" "noatime"];
+  };
+
+  fileSystems."/var/tmp" = {
+    device = "/dev/disk/by-partlabel/root";
+    fsType = "btrfs";
+    options = ["subvol=@var-tmp" "noatime"];
+  };
+
+  # Container & VM storage
+  fileSystems."/var/lib/containers" = {
+    device = "/dev/disk/by-partlabel/root";
+    fsType = "btrfs";
+    options = ["subvol=@containers" "compress=zstd" "noatime"];
+  };
+
+  fileSystems."/var/lib/libvirt" = {
+    device = "/dev/disk/by-partlabel/root";
+    fsType = "btrfs";
+    options = ["subvol=@libvirt" "compress=zstd:1" "noatime"];
+  };
+
+  # Snapshots & Swap
+  fileSystems."/.snapshots" = {
+    device = "/dev/disk/by-partlabel/root";
+    fsType = "btrfs";
+    options = ["subvol=@snapshots" "compress=zstd" "noatime"];
   };
 
   fileSystems."/swap" = {
-    device = "/dev/mapper/cryptroot";
+    device = "/dev/disk/by-partlabel/root";
     fsType = "btrfs";
     options = ["subvol=@swap" "noatime"];
-  };
-
-  fileSystems."/.snapshots" = {
-    device = "/dev/mapper/cryptroot";
-    fsType = "btrfs";
-    options = ["subvol=@snapshots" "compress=zstd" "noatime"];
   };
 
   fileSystems."/boot" = {
@@ -111,17 +133,12 @@
     options = ["umask=0077"];
   };
 
-  # LUKS encryption
-  boot.initrd.luks.devices."cryptroot" = {
-    device = "/dev/disk/by-partlabel/luks";
-    allowDiscards = true;
-  };
+  # ============================================================
+  # Swap (96GB for hibernate with 96GB RAM)
+  # ============================================================
 
-  # Swap (btrfs swapfile created by disko)
   swapDevices = [
-    {
-      device = "/swap/swapfile";
-    }
+    {device = "/swap/swapfile";}
   ];
 
   # ============================================================
