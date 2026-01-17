@@ -320,6 +320,23 @@
           networking.networkmanager.ensureProfiles = {
             environmentFiles = [];
             profiles = {
+              # Thunderbolt ethernet for installation (static IP)
+              "thunderbolt0" = {
+                connection = {
+                  id = "thunderbolt0";
+                  type = "ethernet";
+                  autoconnect = true;
+                  autoconnect-priority = 200;  # Higher than WiFi
+                  interface-name = "thunderbolt0";
+                };
+                ipv4 = {
+                  method = "manual";
+                  addresses = "2.2.2.4/24";
+                  gateway = "2.2.2.2";
+                  dns = "8.8.8.8;8.8.4.4";
+                };
+                ipv6.method = "disabled";
+              };
               "wifi5.0G" = {
                 connection = {
                   id = "wifi5.0G";
@@ -375,8 +392,9 @@
 
             Welcome to the NixOS Installer for Framework 16!
 
-            SSH is enabled! Connect with: ssh nixos@<this-ip> or ssh root@<this-ip>
-            WiFi should auto-connect to: wifi5.0G
+            SSH is enabled! Connect with: ssh nixos@2.2.2.4 or ssh root@2.2.2.4
+            Thunderbolt ethernet: 2.2.2.4 (auto-configured)
+            WiFi fallback: wifi5.0G (auto-connect)
             Check connection: ip a
 
             Quick start:
