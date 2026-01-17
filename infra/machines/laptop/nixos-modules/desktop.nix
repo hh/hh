@@ -28,7 +28,7 @@
     hypridle
     hyprpaper
     pyprland
-    rofi-wayland
+    rofi
     swww
     waybar
     wlogout

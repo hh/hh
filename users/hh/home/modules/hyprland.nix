@@ -8,7 +8,7 @@
 }: let
   terminal = "${pkgs.ghostty}/bin/ghostty";
   browser = "${pkgs.firefox}/bin/firefox";
-  launcher = "${pkgs.rofi-wayland}/bin/rofi -show drun";
+  launcher = "${pkgs.rofi}/bin/rofi -show drun";
   grim = "${pkgs.grim}/bin/grim";
   slurp = "${pkgs.slurp}/bin/slurp";
   swappy = "${pkgs.swappy}/bin/swappy";
