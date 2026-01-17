@@ -17,6 +17,11 @@
     ./nixos-modules/user.nix
     ./nixos-modules/ssh.nix
     ./nixos-modules/tailscale.nix
+
+    # GitOps auto-deployment (depot pattern)
+    ./nixos-modules/depot-sync.nix
+    ./nixos-modules/depot-deploy-machine.nix
+    ./nixos-modules/depot-deploy-home.nix
   ];
 
   # ============================================================
