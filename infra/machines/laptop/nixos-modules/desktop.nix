@@ -96,18 +96,11 @@
     enable = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
-      amdvlk
       rocmPackages.clr # OpenCL support
-    ];
-    extraPackages32 = with pkgs; [
-      driversi686Linux.amdvlk
     ];
   };
 
-  # Prefer RADV (Mesa) Vulkan driver over AMDVLK for gaming
-  environment.variables = {
-    AMD_VULKAN_ICD = "RADV";
-  };
+  # RADV (Mesa) is now the default and recommended Vulkan driver for AMD
 
   # ============================================================
   # Framework 16 Specific
