@@ -313,9 +313,10 @@
 
           nix.settings.experimental-features = ["nix-command" "flakes"];
           networking.networkmanager.enable = true;
-          networking.wireless.enable = false;
+          networking.wireless.enable = lib.mkForce false;
 
           # Pre-configured WiFi networks (auto-connect on boot)
+          # Only wifi5.0G included - add others via nmcli after boot
           networking.networkmanager.ensureProfiles = {
             environmentFiles = [];
             profiles = {
@@ -338,56 +339,22 @@
                 ipv4.method = "auto";
                 ipv6.method = "auto";
               };
-              "Harperhouse" = {
-                connection = {
-                  id = "Harperhouse";
-                  type = "wifi";
-                  autoconnect = true;
-                  autoconnect-priority = 90;
-                };
-                wifi = {
-                  mode = "infrastructure";
-                  ssid = "Harperhouse";
-                };
-                wifi-security = {
-                  auth-alg = "open";
-                  key-mgmt = "wpa-psk";
-                  psk = "Harper1064";
-                };
-                ipv4.method = "auto";
-                ipv6.method = "auto";
-              };
-              "Bitter Buffalo" = {
-                connection = {
-                  id = "Bitter Buffalo";
-                  type = "wifi";
-                  autoconnect = true;
-                  autoconnect-priority = 80;
-                };
-                wifi = {
-                  mode = "infrastructure";
-                  ssid = "Bitter Buffalo";
-                };
-                wifi-security = {
-                  auth-alg = "open";
-                  key-mgmt = "wpa-psk";
-                  psk = "pr@yf0rm0j0";
-                };
-                ipv4.method = "auto";
-                ipv6.method = "auto";
-              };
             };
           };
 
           # Latest kernel for Framework 16
           boot.kernelPackages = pkgs.linuxPackages_latest;
 
+          # Disable ZFS (broken with latest kernel, and we use btrfs anyway)
+          boot.supportedFilesystems.zfs = lib.mkForce false;
+          nixpkgs.config.allowBroken = false;
+
           # Helpful message on login
           services.getty.helpLine = lib.mkForce ''
 
             Welcome to the NixOS Installer for Framework 16!
 
-            WiFi should auto-connect to: wifi5.0G, Harperhouse, or Bitter Buffalo
+            WiFi should auto-connect to: wifi5.0G
             Check connection: ip a
 
             Quick start:
