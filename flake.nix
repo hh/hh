@@ -113,7 +113,8 @@
 
     homeConfigurations = {
       # hh's home config for scope (Framework 16)
-      "users:hh:home:scope" = mkHome {
+      # Usage: home-manager switch --flake .#hh@scope
+      "hh@scope" = mkHome {
         username = "hh";
         modules = [
           ./users/hh/home/machines/scope.nix
@@ -420,7 +421,7 @@
           services.getty.autologinUser = "nixos";
 
           # ISO label
-          isoImage.isoName = "nixos-scope-installer.iso";
+          image.fileName = "nixos-scope-installer.iso";
           isoImage.volumeID = "NIXOS_SCOPE";
         })
       ];

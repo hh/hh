@@ -8,9 +8,14 @@
   # Primary User
   # ============================================================
 
+  # NOTE: initialPassword only works during FIRST user creation.
+  # After installation, set password manually: passwd hh
+  # Future: Use sops-nix with hashedPasswordFile for declarative secrets
+  # The sops-nix approach uses the machine's SSH host key to decrypt secrets.
   users.users.hh = {
     isNormalUser = true;
     description = "Hippie Hacker";
+    initialPassword = "password";
     extraGroups = [
       "wheel" # sudo access
       "networkmanager" # Network management

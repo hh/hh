@@ -7,10 +7,13 @@
 {
   disko.devices = {
     disk = {
-      main = {
+      # Use "scope" as disk name to create unique partition labels
+      # This avoids conflicts with other NixOS installs on multi-boot systems
+      scope = {
         type = "disk";
         # Framework 16 primary NVMe (4TB)
-        # Second drive (nvme1n1) left untouched for other OS
+        # Note: NVMe device order can change between boots!
+        # We use partition labels (scope-ESP, scope-root) for reliability
         device = "/dev/nvme0n1";
         content = {
           type = "gpt";

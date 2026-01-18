@@ -34,19 +34,19 @@
   # Lid Switch Behavior
   # ============================================================
 
-  services.logind = {
+  services.logind.settings.Login = {
     # Suspend when lid closed on battery
-    lidSwitch = "suspend";
+    HandleLidSwitch = "suspend";
 
     # Don't suspend when lid closed if external power
-    lidSwitchExternalPower = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
 
     # Don't suspend when docked
-    lidSwitchDocked = "ignore";
+    HandleLidSwitchDocked = "ignore";
 
     # Power button behavior
-    powerKey = "poweroff";
-    powerKeyLongPress = "poweroff";
+    HandlePowerKey = "poweroff";
+    HandlePowerKeyLongPress = "poweroff";
   };
 
   # ============================================================

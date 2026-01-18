@@ -33,6 +33,7 @@ in {
         [safe]
           directory = /var/lib/depot
       ''}
+      export GIT_PATH=${pkgs.git}/bin/git
       ${deploy}/bin/deploy sync
     '';
   };

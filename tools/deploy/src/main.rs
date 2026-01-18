@@ -36,6 +36,16 @@ enum Commands {
 const DEPOT_DIR: &str = "/var/lib/depot";
 const REPO_URL: &str = "https://github.com/hh/hh";
 
+/// Get git binary path, checking GIT_PATH env var first
+fn get_git_cmd() -> String {
+    std::env::var("GIT_PATH").unwrap_or_else(|_| "git".to_string())
+}
+
+/// Get home-manager binary path, checking HOME_MANAGER_PATH env var first
+fn get_home_manager_cmd() -> String {
+    std::env::var("HOME_MANAGER_PATH").unwrap_or_else(|_| "home-manager".to_string())
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize tracing
@@ -62,7 +72,7 @@ async fn sync_depot() -> Result<()> {
 
     if !git_dir.exists() {
         info!("Cloning depot repository from {}", REPO_URL);
-        let output = Command::new("git")
+        let output = Command::new(get_git_cmd())
             .args([
                 "clone",
                 "--depth",
@@ -83,7 +93,7 @@ async fn sync_depot() -> Result<()> {
         }
     } else {
         info!("Pulling depot repository updates");
-        let output = Command::new("git")
+        let output = Command::new(get_git_cmd())
             .args(["-C", DEPOT_DIR, "pull", "--ff-only", "--prune"])
             .output()
             .context("Failed to execute git pull")?;
@@ -213,7 +223,7 @@ async fn deploy_home(local: bool) -> Result<()> {
         .trim()
         .to_string();
 
-    let flake_target = format!("users:hh:home:{}", hostname);
+    let flake_target = format!("hh@{}", hostname);
     info!(
         "Deploying Home Manager configuration using flake target {}",
         flake_target
@@ -245,13 +255,14 @@ async fn deploy_home(local: bool) -> Result<()> {
 
     // Deploy the home configuration
     // If running as root (via sudo), run home-manager as the original user
+    let hm_cmd = get_home_manager_cmd();
     let deploy_result = if std::env::var("SUDO_USER").is_ok() {
         let sudo_user = std::env::var("SUDO_USER").unwrap();
         Command::new("sudo")
             .args([
                 "-u",
                 &sudo_user,
-                "home-manager",
+                &hm_cmd,
                 "switch",
                 "--flake",
                 &format!("{}#{}", depot_dir, flake_target),
@@ -260,7 +271,7 @@ async fn deploy_home(local: bool) -> Result<()> {
             .status()
             .context("Failed to execute home-manager via sudo")?
     } else {
-        Command::new("home-manager")
+        Command::new(&hm_cmd)
             .args([
                 "switch",
                 "--flake",

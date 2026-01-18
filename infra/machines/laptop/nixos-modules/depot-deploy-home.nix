@@ -28,6 +28,8 @@ in {
     };
 
     script = ''
+      export GIT_PATH=${pkgs.git}/bin/git
+      export HOME_MANAGER_PATH=${pkgs.home-manager}/bin/home-manager
       ${deploy}/bin/deploy home
     '';
   };
